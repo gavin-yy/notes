@@ -29,6 +29,14 @@ int main()
     }
 
     struct tm tmr = {0};
+    //https://code.woboq.org/userspace/glibc/time/tzset.c.html#__tz_convert
+     /* Update internal database according to current TZ setting.
+     POSIX.1 8.3.7.2 says that localtime_r is not required to set tzname.
+     This is a good idea since this allows at least a bit more parallelism.
+        tzset_internal (tp == &_tmbuf && use_localtime);
+    glibc 的localtime_r  与localtime() 有区别, localtime()根据TZ环境变量，
+    设置了时区，再进行计算
+    */
     localtime_r(&current, &tmr);
     print_tm(&tmr);
 
