@@ -1,0 +1,8 @@
+
+libavformat-dev
+
+sudo apt install libswscale-dev
+
+-lswscale
+
+-lswscale -lavutil -lavformat -lavcodec -lz -lavutil -lm 
