@@ -71,6 +71,10 @@ int main () {
 
         demo_init_epoll();
         demo_epoll_add_fd(sockserver, EPOLLIN);
+
+        //testcase1: wait till server closed the socket.
+        sleep(6);
+
         while(1) {
             int rc = demo_epoll_wait();
             if( rc < 0 ) {

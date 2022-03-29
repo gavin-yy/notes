@@ -1,0 +1,23 @@
+./unix_server
+waiting for connection
+demo close client socket here
+send last data and close immediately
+
+
+
+./unix_client
+
+Get event [0]: fd=3  EPOLLIN
+	read 8 cnt, schedule delay:6000073 us 
+get EPOLLHUP
+Get event [0]: fd=3  EPOLLIN
+	read 8 cnt, schedule delay:5000042 us 
+get EPOLLHUP
+Get event [0]: fd=3  EPOLLIN
+	read 8 cnt, schedule delay:3994400 us 
+get EPOLLHUP
+Get event [0]: fd=3  EPOLLIN
+	read 8 cnt, schedule delay:2994275 us 
+get EPOLLHUP
+Get event [0]: fd=3  EPOLLIN
+	 read rc=0 error:Success
