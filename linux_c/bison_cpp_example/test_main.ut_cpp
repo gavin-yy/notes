@@ -1,0 +1,118 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@RDL.com>
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
+#include <iostream>
+#include <sstream>
+
+#include "scanner.h"
+#include "parser.hpp"
+#include "interpreter.h"
+
+using namespace RDL;
+using namespace std;
+
+vector<std::string> test_strings = {
+    R"(IF (((aaa.1.1 == {} && bbb.2.1 > 19) || @clock == "0 33 8"))  AND (@day == "? * 2,3,7,1") THEN
+        aaa.3.4 => true;
+        SLEEP => 2000;
+        bbb.3.4 =>
+            #1 = 100,
+            #2 = "aaa";
+    ENDIF)",
+
+    R"(IF (@day == "? * 2,3,7,1" && @clock == "0 47 9") THEN
+        4428A3B3B4BF3B27.5.1 => true;
+    ENDIF)",
+
+    R"(IF (((aaa.1.1 == {} && bbb.2.1 > 19) || @clock == "0 33 8")) THEN
+        aaa.3.4 => true;
+        SLEEP => 2000;
+        bbb.3.4 =>
+            #1 = 100,
+            #2 = "aaa";
+    ENDIF)",
+
+    R"(IF (((aaa.1.1 == {} && bbb.2.1 > 19) && ccc.3.1 == "fox")) THEN
+        aaa.3.4 => true;
+        SLEEP => 2000;
+        bbb.3.4 =>
+            #1 = 100,
+            #2 = "aaa",
+            #3 = true;
+    ENDIF)",
+
+    R"(IF (((aaa.1.1 == {#1 = 2} && bbb.2.1 > 19) && ccc.3.1 == "fox")) THEN
+        aaa.3.4 => true;
+        SLEEP => 2000;
+        bbb.3.4 =>
+            #1 = 100,
+            #2 = "aaa",
+            #3 = true;
+    ENDIF)",
+
+    R"(
+        IF (((aaa.1.1 == true && bbb.2.1 > 19) && ccc.3.1 == "fox") || ((ddd.9.7 <= 30 && eee.3.5 == 12345) || fff.3.1 >= 100)) THEN
+            aaa.3.4 => true;
+            SLEEP => 2000;
+            @{123};
+            bbb.3.4 =>
+                #1 = 100,
+                #2 = "aaa",
+                #3 = (#2: 120, #3: 240, #4: 30),
+                #7 = (#1: true, #5: true);
+        ENDIF
+    )",
+};
+
+int main(int argc, char **argv) {
+
+    int test_index = 0;
+    if( argc > 1 ) {
+        test_index = atoi(argv[1]);
+
+        if( test_index >= test_strings.size() ) {
+            cout << "Invalid test index: " << test_index << endl;
+            return -1;
+        }
+    }
+
+    string input = test_strings[test_index];
+    stringstream ss(input);
+
+    Interpreter i;
+
+    i.switchInputStream(&ss);
+
+    int res = i.parse();
+    cout << "Parse complete. Result = " << res << endl;
+
+
+    cout << i.generateCondJson().dump(4) << endl;
+
+    return res;
+}
